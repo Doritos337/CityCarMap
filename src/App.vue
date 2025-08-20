@@ -5,12 +5,12 @@ import VehicleTable from './components/VehicleTable.vue';
 import VehicleSummary from './components/VehicleSummary.vue';
 import VehicleMap from './components/VehicleMap.vue';
 
-// --- STATE ---
+const baseURL = import.meta.env.VITE_API_URL;
+
 const count = ref(100);
 const vehicles = ref([]);
 const isLoading = ref(false);
 
-// --- COMPUTED PROPERTIES ---
 const averageSpeed = computed(() => {
   if (vehicles.value.length === 0) return 0;
   const totalSpeed = vehicles.value.reduce((sum, vehicle) => sum + vehicle.speed, 0);
@@ -26,7 +26,6 @@ const vehiclesBetween50And80 = countSpeedRange(50, 80);
 const vehiclesAbove80 = countSpeedRange(80, Infinity);
 
 
-// --- METHODS ---
 const generateVehicles = async () => {
   if (count.value < 100 || count.value > 500) {
     alert('Invalid count. Please enter a number between 100 and 500.');
@@ -34,7 +33,7 @@ const generateVehicles = async () => {
   }
   isLoading.value = true;
   try {
-    const response = await axios.get(`http://localhost:3000/vehicles?count=${count.value}`);
+    const response = await axios.get(`${baseURL}/vehicles?count=${count.value}`);
     vehicles.value = response.data;
   } catch (error) {
     console.error("Error fetching vehicle data:", error);
@@ -44,7 +43,6 @@ const generateVehicles = async () => {
   }
 };
 
-// --- LIFECYCLE HOOKS ---
 onMounted(() => {
   generateVehicles();
   setInterval(generateVehicles, 30000);
